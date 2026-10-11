@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Financial OCR field protection",
+    "subtitle": "Extraction precedes profile-scoped replacement and stage two",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1280,
+      720
+    ]
+  },
+  "components": [
+    {
+      "id": "document",
+      "type": "external",
+      "label": "Fictional document",
+      "sublabel": "raw image / source text",
+      "pos": [
+        35,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "stage1",
+      "type": "cloud",
+      "label": "Stage 1 extraction",
+      "sublabel": "configured OCR / VLM endpoint",
+      "pos": [
+        260,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "validate",
+      "type": "backend",
+      "label": "Profile validation",
+      "sublabel": "published field allowlist",
+      "pos": [
+        500,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "vault",
+      "type": "security",
+      "label": "AES-GCM token map",
+      "sublabel": "document scope, memory key",
+      "pos": [
+        500,
+        500
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "stage2",
+      "type": "cloud",
+      "label": "Stage 2 model",
+      "sublabel": "validated model output",
+      "pos": [
+        750,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "result",
+      "type": "backend",
+      "label": "Application result",
+      "sublabel": "allowed fields + provenance",
+      "pos": [
+        1000,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "document_stage1",
+      "from": "document",
+      "to": "stage1",
+      "variant": "emphasis"
+    },
+    {
+      "id": "stage1_validate",
+      "from": "stage1",
+      "to": "validate"
+    },
+    {
+      "id": "validate_vault",
+      "from": "validate",
+      "to": "vault"
+    },
+    {
+      "id": "validate_stage2",
+      "from": "validate",
+      "to": "stage2"
+    },
+    {
+      "id": "stage2_result",
+      "from": "stage2",
+      "to": "result"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Data boundary",
+      "items": [
+        "Unknown fields and raw image/text are excluded from the sample payload",
+        "An on-premises stage-one provider is required for local image processing"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Limits",
+      "items": [
+        "Profile rules do not detect every PII type",
+        "The example does not recalculate business formulas"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+﻿.env
+.env.*
+!.env.example
+*.local.*
+*.log
+*.key
+*.pem
+*.p12
+*.pfx
+__pycache__/
+.pytest_cache/
+.venv/
+.local/
+node_modules/
+.vscode/
+.DS_Store
+Thumbs.db

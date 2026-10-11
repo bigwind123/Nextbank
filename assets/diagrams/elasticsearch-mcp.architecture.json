@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Skill-scoped Elasticsearch MCP",
+    "subtitle": "The public sample checks tool access at list and dispatch time",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1280,
+      720
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User request",
+      "sublabel": "fictional query",
+      "pos": [
+        35,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "skill",
+      "type": "frontend",
+      "label": "Skill page",
+      "sublabel": "selected skill identity",
+      "pos": [
+        250,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "config",
+      "type": "database",
+      "label": "Skill tool config",
+      "sublabel": "es_* allowlist",
+      "pos": [
+        470,
+        160
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "dispatch",
+      "type": "security",
+      "label": "Dispatch guard",
+      "sublabel": "recheck skill + tool",
+      "pos": [
+        700,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "provider",
+      "type": "cloud",
+      "label": "MCP fixture",
+      "sublabel": "in-memory, offline",
+      "pos": [
+        945,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "denied",
+      "type": "backend",
+      "label": "Denied call",
+      "sublabel": "provider not invoked",
+      "pos": [
+        700,
+        500
+      ],
+      "size": [
+        170,
+        78
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user_skill",
+      "from": "user",
+      "to": "skill"
+    },
+    {
+      "id": "skill_config",
+      "from": "skill",
+      "to": "config"
+    },
+    {
+      "id": "skill_dispatch",
+      "from": "skill",
+      "to": "dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "config_dispatch",
+      "from": "config",
+      "to": "dispatch"
+    },
+    {
+      "id": "dispatch_provider",
+      "from": "dispatch",
+      "to": "provider"
+    },
+    {
+      "id": "dispatch_denied",
+      "from": "dispatch",
+      "to": "denied",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Tools in the fixture",
+      "items": [
+        "es_search · es_esql · es_list_indices",
+        "es_get_mappings · es_get_shards"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Scope statement",
+      "items": [
+        "Missing configuration exposes no tools in this sample",
+        "This sample hardens dispatch beyond the original call path"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI Model Gateway、Financial OCR 與 Elasticsearch AIOps 的離線合成資料操作示例。">
+  <title>AI Platform 操作示例</title>
+  <link rel="stylesheet" href="assets/demo.css">
+  <script src="assets/demo.js" defer></script>
+</head>
+<body data-module="gateway">
+  <a class="skip-link" href="#workspace-main">跳至主要內容</a>
+  <header class="demo-topbar">
+    <a class="top-home" href="index.html" aria-label="回到作品集首頁"><span class="home-mark" aria-hidden="true">N</span><span>AI PLATFORM <small>ENGINEERING</small></span></a>
+    <nav class="module-nav" aria-label="模組導覽">
+      <a href="demo.html?module=gateway" data-module-link="gateway">AI Model Gateway</a>
+      <a href="demo.html?module=ocr" data-module-link="ocr">Financial OCR</a>
+      <a href="demo.html?module=chat" data-module-link="chat">Elasticsearch AIOps</a>
+    </nav>
+    <a class="language-switch" id="language-switch" href="demo.en.html?module=gateway" lang="en" hreflang="en" aria-label="Open this walkthrough in English">English</a>
+    <span class="offline-ribbon"><i aria-hidden="true"></i>依原始模板重建 · 合成資料 · 離線示例</span>
+  </header>
+
+  <main id="workspace-main">
+    <section id="gateway-module" class="module-screen gateway-screen" aria-label="AI Model Gateway 操作示例">
+      <header class="app-header"><div class="app-header-start"><a class="back-button" href="index.html" aria-label="返回作品集">←</a><span class="app-title">AI Model Gateway</span></div><div class="app-header-end"><span class="role-label">平台管理示例</span></div></header>
+      <div class="app-shell">
+        <aside class="side-panel" aria-label="Gateway 導覽">
+          <h1 class="side-title">AI Gateway</h1>
+          <label class="workspace-label" for="workspace-picker">目前 Workspace</label>
+          <select id="workspace-picker" class="dark-select workspace-select"><option value="atlas">Workspace Atlas</option><option value="beacon">Workspace Beacon</option></select>
+          <nav class="side-nav" aria-label="管理項目">
+            <p class="nav-group-title">Workspace</p>
+            <button class="side-nav-item is-current" id="gw-workspace-tab" type="button" aria-current="page">模型與授權</button>
+            <button class="side-nav-item unavailable" type="button" disabled>成員與權限 <span>此示例未提供</span></button>
+            <p class="nav-group-title">平台</p>
+            <button class="side-nav-item" id="gw-platform-tab" type="button">分配與限額</button>
+            <button class="side-nav-item unavailable" type="button" disabled>Workspace 管理 <span>此示例未提供</span></button>
+            <button class="side-nav-item unavailable" type="button" disabled>使用量報表 <span>此示例未提供</span></button>
+          </nav>
+          <div class="side-note"><span aria-hidden="true">i</span><p>Workspace 是本地管理映射；核准後仍須由管理者選用至原生 Team。</p></div>
+        </aside>
+
+        <div class="work-area">
+          <section id="gw-workspace-view" class="content-view" aria-labelledby="gw-workspace-heading">
+            <div class="view-heading"><div><p class="view-breadcrumb">WORKSPACE / <span id="workspace-name-heading">WORKSPACE ATLAS</span></p><h2 id="gw-workspace-heading">模型與授權</h2></div><span class="context-badge">管理範圍：Workspace</span></div>
+            <div class="workspace-overview panel">
+              <div class="panel-title-row"><div><h3>已選用模型</h3><p class="helper-text">顯示已加入原生 Team allowlist 的模型。</p></div><span class="resource-count" id="workspace-model-count">0 個模型</span></div>
+              <div class="empty-state" id="workspace-empty"><span class="empty-symbol" aria-hidden="true">◇</span><div><b>尚未選用模型</b><p>先在平台頁核准模型，再選用至對應 Team。</p></div></div>
+              <div class="table-wrap is-hidden" id="selected-table-wrap"><table class="data-table"><thead><tr><th scope="col">模型</th><th scope="col">原生 Team 狀態</th><th scope="col">Runtime</th></tr></thead><tbody id="selected-model-rows"></tbody></table></div>
+            </div>
+            <div class="panel selection-panel">
+              <div class="panel-title-row"><div><h3>選用已核准模型</h3><p class="helper-text">此操作寫入合成的原生 Team allowlist 狀態。</p></div><span class="context-badge">Workspace 操作</span></div>
+              <div class="form-grid">
+                <label for="approved-model-picker">已核准模型<select id="approved-model-picker" class="dark-select"><option value="">請先核准模型</option></select></label>
+                <label class="check-label"><input id="timeout-mode" type="checkbox"> 展示情境：模擬回應逾時</label>
+                <div class="form-action"><button class="primary-button" id="select-model" type="button" disabled>選用</button><p id="selection-status" class="status-line" role="status" aria-live="polite" aria-atomic="true">等待選擇模型</p><button class="secondary-button is-hidden" id="reconcile-model" type="button">核對</button></div>
+              </div>
+            </div>
+            <p class="view-footnote">平台核准、原生 Team 選用與 Runtime 驗證是不同狀態；此示例不連接模型服務。</p>
+          </section>
+
+          <section id="gw-platform-view" class="content-view is-hidden" aria-labelledby="gw-platform-heading">
+            <div class="view-heading"><div><p class="view-breadcrumb">平台 / MODEL ALLOCATION</p><h2 id="gw-platform-heading">分配與限額</h2></div><span class="context-badge">平台管理範圍</span></div>
+            <div class="panel allocation-panel"><div class="panel-title-row"><div><h3>Workspace 模型分配</h3><p class="helper-text">核准記錄管理決策，不會直接修改原生 Team allowlist。</p></div><span class="panel-icon" aria-hidden="true">＋</span></div>
+              <div class="form-grid">
+                <label for="platform-workspace">Workspace<select id="platform-workspace" class="dark-select"><option value="atlas">Workspace Atlas</option><option value="beacon">Workspace Beacon</option></select></label>
+                <label for="platform-model">模型<select id="platform-model" class="dark-select"><option value="model-a">text-core</option><option value="model-b">vision-plus</option></select></label>
+                <div class="form-action"><button class="primary-button" id="approve-model" type="button">核准</button><p id="approval-feedback" class="status-line" role="status" aria-live="polite" aria-atomic="true"></p></div>
+              </div>
+            </div>
+            <div class="panel allocation-panel"><div class="panel-title-row"><div><h3>核准紀錄</h3><p class="helper-text">核准後可回到 Workspace 頁，另行選用。</p></div><span class="approval-count" id="platform-approval-count">0 筆核准</span></div>
+              <div class="empty-state compact" id="platform-approved-empty"><span class="empty-symbol" aria-hidden="true">◇</span><div><b>尚無核准紀錄</b><p>選擇 Workspace 與模型後按「核准」。</p></div></div>
+              <div class="table-wrap is-hidden" id="platform-approved-wrap"><table class="data-table"><thead><tr><th scope="col">Workspace</th><th scope="col">模型</th><th scope="col">記錄</th></tr></thead><tbody id="platform-approved-rows"></tbody></table></div>
+            </div>
+            <div class="panel allocation-panel limits-panel"><div class="panel-title-row"><div><h3>Workspace 限額</h3><p class="helper-text">此重建示例不包含限額設定功能。</p></div><span class="context-badge">未提供</span></div><div class="disabled-fields"><label>RPM 上限<input disabled value="—" aria-label="RPM 上限，示例未提供"></label><label>TPM 上限<input disabled value="—" aria-label="TPM 上限，示例未提供"></label><label>費用上限<input disabled value="—" aria-label="費用上限，示例未提供"></label></div></div>
+          </section>
+          <div class="gateway-demo-note"><span aria-hidden="true">i</span><p>逾時後先呈現「待核對」；核對確認只代表原生 Team 寫入狀態已讀回，Runtime 仍未驗證。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ocr-module" class="module-screen ocr-screen is-hidden" aria-label="Financial OCR 操作示例">
+      <header class="ocr-header"><div class="ocr-brand"><a href="index.html" class="ocr-home" aria-label="返回作品集">←</a><h1>Financial OCR <small>財力文件</small></h1></div><nav><a href="index.html">作品集</a><a href="demo.html?module=ocr" aria-current="page">文件案例</a></nav></header>
+      <div class="ocr-container">
+        <section id="ocr-list-view" aria-labelledby="ocr-list-heading">
+          <div class="ocr-page-heading"><div><p class="ocr-eyebrow">DOCUMENT WORKFLOW / CASES</p><h2 id="ocr-list-heading">文件案例</h2></div><button class="ocr-button" id="ocr-create-case" type="button">＋ 建立合成案例</button></div>
+          <div class="ocr-toolbar"><label class="sr-only" for="ocr-search">搜尋案例</label><input id="ocr-search" type="search" placeholder="搜尋案例" autocomplete="off"><span id="ocr-case-count" class="case-count">2 個案例</span></div>
+          <div class="ocr-table-shell"><table class="ocr-table"><thead><tr><th scope="col">案例編號</th><th scope="col">申請類型</th><th scope="col">狀態</th><th scope="col">文件數</th><th scope="col">操作</th></tr></thead><tbody id="ocr-case-rows"></tbody></table></div>
+          <p class="ocr-footnote">案例與文件均為內建合成 fixture；不讀取本機檔案，也不呼叫外部服務。</p>
+        </section>
+        <section id="ocr-detail-view" class="is-hidden" aria-labelledby="ocr-detail-heading">
+          <button class="ocr-back-link" id="ocr-back" type="button">← 返回文件案例</button>
+          <div class="ocr-page-heading detail-heading"><div><p class="ocr-eyebrow">CASE / <span id="ocr-case-crumb">DEMO-0001</span></p><h2 id="ocr-detail-heading">案例明細</h2></div><span class="ocr-state" id="ocr-case-state">待處理</span></div>
+          <div class="ocr-meta-grid">
+            <article class="ocr-card"><p class="card-label">案例資訊</p><h3 id="ocr-case-code">DEMO-0001</h3><dl><div><dt>申請類型</dt><dd id="ocr-case-type">文件辨識示例</dd></div><div><dt>文件數</dt><dd id="ocr-doc-count">0 個</dd></div></dl></article>
+            <article class="ocr-card eval-card"><div><p class="card-label">案例評估</p><h3 id="ocr-eval-state">尚未評估</h3><p id="ocr-eval-note">辨識完成後，可明確執行摘要評估。</p></div><button class="ocr-button ocr-button-dark" id="ocr-evaluate" type="button" disabled>執行用戶財力評估摘要</button></article>
+          </div>
+          <section class="ocr-card recognition-card" aria-labelledby="recognition-heading">
+            <div class="panel-title-row"><div><p class="card-label">STAGE 1 / IMAGE EXTRACTION</p><h3 id="recognition-heading">文件辨識與遮罩</h3></div><span class="fixture-pill">合成 fixture</span></div>
+            <div class="recognition-form">
+              <label for="ocr-provider">VLM Provider<select id="ocr-provider"><option value="openai-compatible">OpenAI-compatible VLM（合成示例）</option><option value="on-prem">On-prem VLM（合成示例）</option></select></label>
+              <label for="ocr-doctype">文件類型<select id="ocr-doctype"><option value="income">收入證明</option><option value="statement">帳單摘要</option></select></label>
+              <label for="ocr-file-fixture">展示 fixture（合成文件）<select id="ocr-file-fixture"><option value="page1">sample-statement.page-01</option><option value="page2">sample-statement.page-02</option></select></label>
+              <button class="ocr-button" id="ocr-recognize" type="button">執行辨識與遮罩</button>
+            </div>
+            <p id="ocr-provider-note" class="ocr-inline-note" role="status" aria-live="polite" aria-atomic="true">Stage 1 由所選 provider fixture 產生合成值；遮罩值使用可還原代碼表示。</p>
+            <div class="recognized-docs-wrap is-hidden" id="recognized-docs-wrap"><div class="panel-title-row"><h4>已辨識文件</h4><span id="recognized-count" class="case-count">0 個</span></div><div class="ocr-table-shell"><table class="ocr-table docs-table"><thead><tr><th scope="col">文件類型</th><th scope="col">文件頁面</th><th scope="col">VLM Provider</th><th scope="col">狀態</th></tr></thead><tbody id="recognized-docs"></tbody></table></div></div>
+          </section>
+          <section class="pipeline-section" aria-labelledby="pipeline-heading"><div class="pipeline-heading"><div><p class="ocr-eyebrow">STAGE 2 / CASE PAYLOAD</p><h3 id="pipeline-heading">案例評估資料流</h3></div><p>辨識結果先產生下一步 payload；儲存回應與 Parser 結果只在明確執行摘要評估後出現。</p></div>
+            <div class="pipeline-grid">
+              <article class="pipeline-card"><div class="pipeline-step"><span>1</span><small>擷取 · 遮罩</small></div><h4>Profile 欄位值</h4><p class="pipeline-hint">合成辨識輸出與遮罩後欄位，保留文件與頁面來源。</p><div id="ocr-stage1" class="pipeline-content empty-content">執行辨識後顯示 Profile 欄位值。</div></article>
+              <article class="pipeline-card"><div class="pipeline-step"><span>2</span><small>輸出 · 檢視</small></div><h4>下一步 Case request</h4><p class="pipeline-hint">依公開欄位設定組成的下一步請求預覽。</p><pre id="ocr-case-request" class="pipeline-content code-content empty-content">尚無待送出的合成 payload。</pre></article>
+              <article class="pipeline-card"><div class="pipeline-step"><span>3</span><small>評估後 · 儲存</small></div><h4>已儲存 Raw response</h4><p class="pipeline-hint">明確執行摘要評估後產生的合成回應。</p><pre id="ocr-raw-response" class="pipeline-content code-content empty-content">尚無已儲存的評估回應。</pre></article>
+              <article class="pipeline-card parser-card"><div class="pipeline-step"><span>4</span><small>解析 · Parser</small></div><h4>Parser 欄位 / errors</h4><p class="pipeline-hint">檢查 JSON 結構與欄位型別，不重新計算財務公式。</p><div id="ocr-parser" class="pipeline-content empty-content">評估後檢查欄位結構與型別。</div></article>
+            </div>
+            <div class="ocr-source-note"><span aria-hidden="true">i</span><p>On-prem 是可設定的 provider 選項；示例只呈現合成 fixture，無法代表實際文件處理位置。</p></div>
+          </section>
+        </section>
+      </div>
+    </section>
+
+    <section id="chat-module" class="module-screen chat-screen is-hidden" aria-label="Elasticsearch AIOps 對話示例">
+      <aside id="chat-sidebar" class="chat-sidebar" aria-label="對話清單"><div class="sidebar-head"><a class="chat-brand" href="index.html"><span aria-hidden="true">◈</span><span>ELASTICSEARCH<br><b>AIOPS</b></span></a><button id="chat-sidebar-toggle" class="sidebar-toggle" type="button" aria-expanded="true" aria-label="收合對話清單">☰</button></div>
+        <p class="chat-sidebar-label">CHAT ROOMS</p><button class="new-room-button" id="new-room" type="button"><span aria-hidden="true">＋</span> 新對話</button><div id="room-list" class="room-list" role="list"></div><div class="chat-side-footer"><span class="skill-mini-icon" aria-hidden="true">⌘</span><span>固定技能<br><b>Elasticsearch Ops</b></span></div></aside>
+      <div class="chat-main"><header class="chat-toolbar"><a class="chat-home" href="index.html">← <span>作品集</span></a><span class="skill-context"><span aria-hidden="true">⌘</span> Elasticsearch Ops</span><h1 id="chat-room-title">選擇對話或建立新對話</h1><label class="sr-only" for="chat-model">模型</label><select id="chat-model" class="chat-model"><option value="model-a">sample-chat-a</option><option value="model-b">sample-chat-b</option></select><button id="reset-chat" class="chat-toolbar-button" type="button" disabled>重設對話</button><button id="export-chat" class="chat-toolbar-button" type="button" disabled>匯出對話</button></header>
+        <div id="chat-transcript" class="chat-transcript" aria-live="polite" aria-relevant="additions text"><div class="chat-welcome"><span class="welcome-mark" aria-hidden="true">◈</span><h2>Elasticsearch Operations</h2><p>建立對話後，輸入合成的查詢問題。</p><small>固定技能 · 離線 fixture</small></div></div>
+        <form id="chat-composer" class="chat-composer"><label class="sr-only" for="chat-input">輸入訊息</label><textarea id="chat-input" rows="1" placeholder="輸入訊息；Enter 送出，Shift+Enter 換行" disabled></textarea><button id="chat-send" class="chat-send" type="submit" disabled>送出 <span aria-hidden="true">↑</span></button><p id="chat-status" class="chat-status" role="status" aria-live="polite" aria-atomic="true">請先選擇或建立對話。</p></form><p class="chat-bottom-note">合成回覆與 MCP 呼叫紀錄來自本機 fixture。</p>
+      </div>
+    </section>
+  </main>
+  <footer class="demo-footer"><a href="README.md">Portfolio README</a><span>Source-derived interface · synthetic data · offline demo</span><a href="CONTENT_SELECTION.md">內容與隱私說明</a></footer>
+</body>
+</html>

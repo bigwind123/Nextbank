@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Gateway publication and recovery",
+    "subtitle": "Unknown write outcomes require readback before confirmation",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1280,
+      720
+    ]
+  },
+  "components": [
+    {
+      "id": "request",
+      "type": "external",
+      "label": "Publish request",
+      "sublabel": "actor + key + payload",
+      "pos": [
+        30,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "manager",
+      "type": "backend",
+      "label": "Flask manager",
+      "sublabel": "validate and fingerprint",
+      "pos": [
+        240,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "Operation ledger",
+      "sublabel": "key, actor, payload hash",
+      "pos": [
+        450,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "native",
+      "type": "cloud",
+      "label": "Native management API",
+      "sublabel": "create attempt",
+      "pos": [
+        660,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "readback",
+      "type": "backend",
+      "label": "Readback check",
+      "sublabel": "native ID + ownership metadata",
+      "pos": [
+        870,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "active",
+      "type": "database",
+      "label": "Confirmed result",
+      "sublabel": "matching readback only",
+      "pos": [
+        1080,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "unknown",
+      "type": "security",
+      "label": "UNKNOWN",
+      "sublabel": "timeout / mismatch",
+      "pos": [
+        660,
+        500
+      ],
+      "size": [
+        170,
+        78
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "request_manager",
+      "from": "request",
+      "to": "manager",
+      "variant": "emphasis"
+    },
+    {
+      "id": "manager_ledger",
+      "from": "manager",
+      "to": "ledger"
+    },
+    {
+      "id": "ledger_native",
+      "from": "ledger",
+      "to": "native"
+    },
+    {
+      "id": "native_readback",
+      "from": "native",
+      "to": "readback"
+    },
+    {
+      "id": "readback_active",
+      "from": "readback",
+      "to": "active"
+    },
+    {
+      "id": "native_unknown",
+      "from": "native",
+      "to": "unknown",
+      "label": "timeout",
+      "variant": "dashed",
+      "labelAt": [
+        745,
+        420
+      ]
+    },
+    {
+      "id": "unknown_retry",
+      "from": "unknown",
+      "to": "readback",
+      "label": "retry",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          850,
+          539
+        ],
+        [
+          850,
+          339
+        ]
+      ],
+      "labelAt": [
+        850,
+        439
+      ]
+    },
+    {
+      "id": "readback_unknown",
+      "from": "readback",
+      "to": "unknown",
+      "label": "mismatch",
+      "fromSide": "right",
+      "toSide": "right",
+      "via": [
+        [
+          1060,
+          339
+        ],
+        [
+          1060,
+          539
+        ]
+      ],
+      "labelAt": [
+        1060,
+        439
+      ],
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Safe replay",
+      "items": [
+        "Same key, actor, and payload returns recorded status",
+        "Changed actor or payload conflicts"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Recovery",
+      "items": [
+        "Readback failure or mismatch remains UNKNOWN",
+        "A retry never creates a second native object"
+      ]
+    }
+  ]
+}

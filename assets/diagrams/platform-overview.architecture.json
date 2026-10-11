@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Modular AIOps platform overview",
+    "subtitle": "Management control plane and application inference paths",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1280,
+      720
+    ]
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "browser session",
+      "pos": [
+        35,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "flask",
+      "type": "backend",
+      "label": "Flask manager",
+      "sublabel": "modular app",
+      "pos": [
+        280,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "native_admin",
+      "type": "cloud",
+      "label": "LiteLLM native API",
+      "sublabel": "management control plane",
+      "pos": [
+        525,
+        300
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "ocr",
+      "type": "backend",
+      "label": "Financial OCR",
+      "sublabel": "separate application flow",
+      "pos": [
+        525,
+        500
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "ocr_inference",
+      "type": "cloud",
+      "label": "OCR inference",
+      "sublabel": "configured endpoint",
+      "pos": [
+        825,
+        500
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "chat",
+      "type": "backend",
+      "label": "Chat skills",
+      "sublabel": "application inference flow",
+      "pos": [
+        525,
+        100
+      ],
+      "size": [
+        170,
+        78
+      ]
+    },
+    {
+      "id": "chat_inference",
+      "type": "cloud",
+      "label": "Chat inference",
+      "sublabel": "configured endpoint",
+      "pos": [
+        825,
+        100
+      ],
+      "size": [
+        170,
+        78
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "operator_flask",
+      "from": "operator",
+      "to": "flask",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "flask_admin",
+      "from": "flask",
+      "to": "native_admin",
+      "label": "management API"
+    },
+    {
+      "id": "ocr_inference",
+      "from": "ocr",
+      "to": "ocr_inference",
+      "label": "model request"
+    },
+    {
+      "id": "chat_inference",
+      "from": "chat",
+      "to": "chat_inference",
+      "label": "model request"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Control plane",
+      "items": [
+        "Flask manager calls the native LiteLLM management API",
+        "The manager does not proxy model inference"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Application inference",
+      "items": [
+        "OCR and chat use configured inference endpoints",
+        "Only an on-premises provider keeps that model request local"
+      ]
+    }
+  ]
+}

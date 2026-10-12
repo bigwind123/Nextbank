@@ -17,10 +17,12 @@ The browser walkthrough is offline and synthetic. Its chat screen does not offer
 ```powershell
 python -m pip install -r requirements-demo.txt
 python examples/run_demo.py all
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p "test_examples.py" -v
 ```
 
 Choose `gateway`, `ocr`, or `mcp` in place of `all` to run one example. The OCR example uses the `cryptography` package for AES-GCM. Its random mapping key exists only in the process memory; the example does not save or print it.
+
+These standalone Python examples use in-memory fixtures and are separate from the persistent Flask runtime now included in `public_app/`. See the root [README](../README.md) for the SQLite-backed application and its optional configured service adapters. The examples remain useful as small isolated control-flow demonstrations; they do not invoke that application.
 
 ## What each example demonstrates
 

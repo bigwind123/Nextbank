@@ -33,3 +33,7 @@
 3. 使用[公開示例命令](public-sample.md)執行獨立合成資料範例。
 
 示範能說明設計選擇和重建流程，不證明生產環境狀態、模型品質、交付成效或營運效益。
+
+## 公開 checkout 的實際可執行成果
+
+此文件前段描述原專案工作內容；公開 checkout 中可實際執行的是 `public_app` Flask/SQLite 重建版、`app.html`／`app.en.html` 前端、獨立 Python 範例與合成資料離線 walkthrough。原私人系統服務、容器、Helm 及完整追蹤的交付 pipeline 未包含在公開 checkout。LiteLLM、VLM、模型及 Elasticsearch 為操作者自行設定的外部服務，不是隨 repo 附帶的服務。

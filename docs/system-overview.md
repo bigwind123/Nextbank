@@ -12,6 +12,12 @@ The system has a platform management product and two applications. The Gateway c
 | Operations chat | Skill-aware model-visible tool list and conversation workflow | Calls its separately configured model endpoint, then invokes tools using JSON-RPC MCP |
 | MCP / Elasticsearch | Execute permitted search and operations queries | The sample is read-only; the original application has additional integrations and mutation-capable tools |
 
+## Public checkout runtime
+
+This checkout also contains a runnable Flask/SQLite reconstruction in `public_app`. Its Gateway, OCR, chat, and constrained MCP routes are public local-runtime code; they are distinct from the private original services described in the case studies. The live UI calls this runtime. The separate `demo*.html` walkthrough is static and fixture-backed. LiteLLM, VLM, model inference, and Elasticsearch are optional operator-configured services and are not bundled.
+
+The public `/mcp` route supports a limited JSON-RPC `tools/list` and `tools/call` contract, requires an `active_skill` context for `elasticsearch-ops`, and exposes only a search-oriented subset. It is not a complete general-purpose MCP server. See [local runtime details](public-runtime.md) for start commands and data boundaries.
+
 ## Request paths
 
 ```text

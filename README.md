@@ -1,8 +1,19 @@
-# AI Model Gateway — Engineering Portfolio
+# AI Model Gateway - Engineering Portfolio
 
 An AI Model Gateway provides a control plane for model endpoints, workspace access, and shared usage. Its engineering problems include governing Workspace and model access, separating approval from native Team configuration, and reconciling remote writes whose outcomes are uncertain. The Gateway manages native LiteLLM objects; Financial OCR and Elasticsearch AIOps are application examples with separately configured inference endpoints. This portfolio presents selected designs and synthetic examples drawn from real engineering work.
 
-[Open the local portfolio](index.html) · [Gateway walkthrough](demo.en.html?module=gateway) · [OCR walkthrough](demo.en.html?module=ocr) · [Elasticsearch chat walkthrough](demo.en.html?module=chat) · [繁體中文示例](demo.html?module=gateway) · [Read in Traditional Chinese](README.zh-TW.md)
+[Open the local portfolio](index.html) | [Run the local app](app.en.html) | [Gateway offline walkthrough](demo.en.html?module=gateway) | [OCR offline walkthrough](demo.en.html?module=ocr) | [Elasticsearch chat offline walkthrough](demo.en.html?module=chat) | [Traditional Chinese runtime](app.html) | [Read in Traditional Chinese](README.zh-TW.md)
+
+## What this checkout can run
+
+| Part | Available here |
+| --- | --- |
+| Local live app | `public_app` is a runnable Flask service with SQLite persistence, Gateway workspace/model approval and selection workflows, operation readback, local event search, chat rooms, and actual OCR processing. It is a public reconstruction and does not include the original private application services. |
+| Offline walkthrough | The source-derived `demo*.html` pages use deterministic synthetic browser state. They do not call the Flask app, run models, read files, or query Elasticsearch; this state resets on reload. |
+| Python examples | Separate runnable sample logic for idempotency/readback, AES-GCM token mapping/profile filtering, and MCP visibility/dispatch. These examples use in-memory records and fake providers. |
+| Optional external services | LiteLLM management, model inference, VLM, and Elasticsearch run only when the operator supplies their own endpoint configuration. The runtime has no bundled model or Elasticsearch service. The private source checkout's deployment artifacts and complete tracked CI/CD pipeline are not part of this public checkout. |
+
+Live app records persist in the local SQLite database under `.local/runtime`; its browser view state resets on reload. Offline walkthrough state resets on reload, and the separate Python example's operation, provider, and pseudonym records exist only in that process. None of these public tools connects to a private platform deployment.
 
 ![Platform overview diagram](assets/diagrams/platform-overview.svg)
 
@@ -12,9 +23,39 @@ An AI Model Gateway provides a control plane for model endpoints, workspace acce
 
 [Financial OCR preview](demo.en.html?module=ocr) · [Elasticsearch AIOps preview](demo.en.html?module=chat)
 
-## Local walkthrough
+## Run the local application
 
-Open `index.html` or a module link above in a browser, or serve the folder with any static HTTP server. There is no build step, external font, or network dependency. The operational UI is reconstructed from source templates and populated with synthetic records; browser actions use deterministic local fixtures and do not call a backend, model, LiteLLM, Elasticsearch, OCR provider, or local document.
+The live app requires Python 3.11 or later; this checkout was verified with Python 3.14.5. From the portfolio folder, create an isolated environment, install the runtime dependencies, and start the loopback-only server. It uses local SQLite and local OCR by default; external integrations are optional and user-configured. The Connections page accepts endpoint URLs and model names only. Keep model and LiteLLM credentials in the ignored `.local/runtime-config.json` or environment variables. Elasticsearch requests support a directly reachable test endpoint without credentials; authenticated Elasticsearch is not configured by this runtime.
+
+**Windows PowerShell:**
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-runtime.txt
+.venv\Scripts\python.exe -m public_app
+```
+
+**macOS / Linux:**
+
+```console
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-runtime.txt
+.venv/bin/python -m public_app
+```
+
+Open <http://127.0.0.1:8000/>. The local operator console has no authentication; keep the server bound to loopback and do not expose its port to a network. The app does not contain a bundled inference model or Elasticsearch service.
+
+RapidOCR runs on the local CPU by default. Selecting VLM requires an explicit confirmation: the original, unmodified uploaded image is sent to the vision endpoint configured by the operator, and it is not de-identified before the VLM receives it. LLM evaluation sends a minimized profile containing only allowlisted fields; name and account values are replaced with document-scoped tokens, raw image/OCR text and source identifiers are excluded, and provenance contains field names only. Local validation checks fields and types, not financial formulas or eligibility. See [live runtime details](docs/public-runtime.md) for the exact boundaries. Chat search uses local SQLite FTS5 unless Elasticsearch is configured. The public `/mcp` route is a scoped JSON-RPC tool-call subset, not a general-purpose MCP client/server implementation.
+
+## Offline walkthrough
+
+Open `index.html` or a module link above directly in a browser for the static portfolio and offline walkthrough. These pages remain usable without Python but do not connect to the live app. To serve the files over HTTP, run this command from the portfolio folder:
+
+```console
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Then open <http://127.0.0.1:8000/index.html> for the static portfolio. GitHub renders HTML as source and does not host this live app. Offline browser controls use synthetic fixtures only; no local documents or external services are accessed.
 
 ## Case studies
 
@@ -28,14 +69,34 @@ The Gateway is the platform case. OCR and Elasticsearch chat are applications ar
 
 ## Reproducible public sample
 
-The Python examples use generated records and local fixtures. OCR's AES-GCM token mapping and the combined `all` command require `cryptography`; Gateway and MCP can run without it. Install the optional sample dependency before running OCR or all examples:
+The commands below require an installed Python 3.14 interpreter; verification used Python 3.14.5. Create an isolated environment from the portfolio folder. These commands do not require activating it.
 
-```console
-python -m pip install -r requirements-demo.txt
-python examples/run_demo.py all
+**Windows PowerShell:**
+
+```powershell
+py -3.14 -m venv .venv
+.venv\Scripts\python.exe examples/run_demo.py gateway
+.venv\Scripts\python.exe examples/run_demo.py mcp
 ```
 
-The public Python sample uses safer defaults where the original chat application had a known gap: it rejects unknown skills and checks dispatch against the selected skill. This is a sample improvement, not a claim about the original application. See [implementation notes](docs/public-sample.md) for commands and scope.
+**macOS / Linux:**
+
+```console
+python3.14 -m venv .venv
+.venv/bin/python examples/run_demo.py gateway
+.venv/bin/python examples/run_demo.py mcp
+```
+
+Gateway and MCP use only the Python standard library. OCR, the combined `all` command, and the checks need `cryptography` for AES-GCM token mapping. Install it in the isolated environment before those commands:
+
+```console
+.venv/bin/python -m pip install -r requirements-demo.txt
+.venv/bin/python examples/run_demo.py ocr
+.venv/bin/python examples/run_demo.py all
+.venv/bin/python -m unittest discover -s tests -p "test_examples.py" -v
+```
+
+On Windows, replace `.venv/bin/python` in this block with `.venv\Scripts\python.exe`. The public Python sample uses safer defaults where the original chat application had a known gap: it rejects unknown skills and checks dispatch against the selected skill. This sample improvement does not describe the original application. See [implementation notes](docs/public-sample.md) for commands and scope.
 
 ## Diagrams and notices
 
@@ -45,7 +106,7 @@ The diagrams use [Archify](https://github.com/tt-a1i/archify), included under it
 
 ## Delivery and ownership
 
-I led the project end to end across product design, application code, platform governance, deployment, and CI/CD work. The delivery note distinguishes that contribution from what can be checked in this source snapshot: deployment artifacts are present, while a complete tracked delivery pipeline is not included. This portfolio does not claim a particular live deployment state or production outcome.
+I led the project end to end across product design, application code, platform governance, deployment, and CI/CD work. The private original project included deployment artifacts. This public checkout contains a runnable local Flask/SQLite reconstruction, but excludes the private backend services, container or Helm artifacts, and a complete tracked delivery pipeline. The live app, offline walkthrough, and Python samples are the public runnable deliverables; this portfolio does not claim a particular live deployment state or production outcome.
 
 ## Scope
 

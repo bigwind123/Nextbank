@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Local, runnable AI Model Gateway, Financial OCR, and Elasticsearch operations workspace.">
+  <title>本機 AI 平台操作台</title>
+  <link rel="stylesheet" href="assets/app.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skip">跳至主要內容</a>
+  <div class="app-shell">
+    <aside class="side-rail" aria-label="產品導覽">
+      <a class="brand" href="index.html"><span class="brand-mark">N</span><span>AI PLATFORM<small>LOCAL WORKSPACE</small></span></a>
+      <nav class="primary-nav" aria-label="操作模組">
+        <button type="button" class="nav-link is-active" data-view="gateway"><span class="nav-icon">01</span><span data-i18n="nav.gateway">AI Model Gateway</span></button>
+        <button type="button" class="nav-link" data-view="ocr"><span class="nav-icon">02</span><span data-i18n="nav.ocr">Financial OCR</span></button>
+        <button type="button" class="nav-link" data-view="chat"><span class="nav-icon">03</span><span data-i18n="nav.chat">Elasticsearch AIOps</span></button>
+        <button type="button" class="nav-link" data-view="settings"><span class="nav-icon">⚙</span><span data-i18n="nav.settings">連線設定</span></button>
+      </nav>
+      <div class="rail-bottom">
+        <a class="rail-link" href="demo.html?module=gateway" data-i18n="offlineLink">離線介面示例</a>
+        <a class="rail-link" href="index.html" data-i18n="portfolioLink">作品集首頁</a>
+        <span class="rail-caption" data-i18n="localOnly">本機操作 · 資料儲存於本機</span>
+      </div>
+    </aside>
+
+    <div class="workspace-shell">
+      <header class="topbar">
+        <div class="topbar-context"><span class="live-dot" aria-hidden="true"></span><span data-i18n="runtimeTitle">本機執行環境</span><span id="runtime-mode" class="mode-badge">讀取中</span></div>
+        <div class="topbar-actions"><span id="runtime-health" role="status" aria-live="polite" class="health-label">連線中…</span><a id="language-link" href="app.en.html" hreflang="en" lang="en" data-i18n="english">English</a></div>
+      </header>
+
+      <main id="main" class="main-content">
+        <div class="local-banner"><span class="banner-symbol" aria-hidden="true">⌂</span><p><strong data-i18n="localBannerTitle">此操作台在本機伺服器執行。</strong> <span data-i18n="localBannerBody">Workspace、案例與對話會保存於 .local/runtime；只在瀏覽器呈現的控制狀態會於重新載入後重讀。</span></p></div>
+        <div id="global-error" class="error-banner is-hidden" role="alert"></div>
+
+        <section id="gateway-view" class="view-panel" aria-labelledby="gateway-heading">
+          <div class="page-heading"><div><p class="eyebrow">MODEL PLATFORM / ACCESS CONTROL</p><h1 id="gateway-heading" data-i18n="gateway.title">AI Model Gateway</h1><p class="page-lead" data-i18n="gateway.lead">管理本機 Workspace 與模型目錄，分開記錄核准、原生 Team 選用與執行階段驗證。</p></div><button class="quiet-button" id="refresh-gateway" type="button" data-i18n="refresh">重新整理</button></div>
+          <div class="status-strip" aria-live="polite"><span><i class="status-dot" id="provider-dot"></i><b data-i18n="gateway.provider">管理 provider</b><span id="gateway-provider">讀取中</span></span><span><i class="status-dot neutral-dot"></i><b data-i18n="gateway.runtime">Runtime</b><span data-i18n="notVerified">未驗證</span></span><span><i class="status-dot neutral-dot"></i><b data-i18n="gateway.inference">推論端點</b><span id="inference-state">讀取中</span></span></div>
+
+          <div class="gateway-grid">
+            <section class="panel workspace-panel" aria-labelledby="workspace-title">
+              <div class="panel-heading"><div><p class="eyebrow">WORKSPACE SCOPE</p><h2 id="workspace-title" data-i18n="gateway.workspaces">Workspace 管理</h2></div><span id="workspace-count" class="count-pill">0</span></div>
+              <label class="field-label" for="workspace-picker" data-i18n="gateway.currentWorkspace">目前 Workspace</label>
+              <select id="workspace-picker" class="control"><option value="">載入中…</option></select>
+              <form id="workspace-edit-form" class="stack-form">
+                <label class="field-label" for="workspace-name" data-i18n="gateway.workspaceName">名稱</label><input id="workspace-name" class="control" maxlength="120" required>
+                <label class="field-label" for="workspace-team" data-i18n="gateway.nativeTeam">原生 Team ID 對應 <span class="optional" data-i18n="optional">選填</span></label><input id="workspace-team" class="control" maxlength="200" autocomplete="off">
+                <p class="field-help" data-i18n="gateway.teamHelp">只有設定 LiteLLM 管理端點時，才需要原生 Team ID。</p>
+                <div class="button-row"><button class="button primary-button" type="submit" data-i18n="saveChanges">儲存變更</button><button class="button danger-button" id="delete-workspace" type="button" data-i18n="delete">刪除</button></div>
+              </form>
+              <details class="create-details"><summary data-i18n="gateway.addWorkspace">新增 Workspace</summary><form id="workspace-create-form" class="stack-form"><label class="field-label" for="new-workspace-name" data-i18n="gateway.workspaceName">名稱</label><input id="new-workspace-name" class="control" maxlength="120" required><label class="field-label" for="new-workspace-team" data-i18n="gateway.nativeTeam">原生 Team ID 對應 <span class="optional">選填</span></label><input id="new-workspace-team" class="control" maxlength="200" autocomplete="off"><button class="button primary-button" type="submit" data-i18n="create">建立</button></form></details>
+            </section>
+
+            <section class="panel models-panel" aria-labelledby="models-title">
+              <div class="panel-heading"><div><p class="eyebrow">MODEL CATALOG</p><h2 id="models-title" data-i18n="gateway.models">模型目錄與存取</h2></div><span id="model-count" class="count-pill">0</span></div>
+              <p class="section-note" data-i18n="gateway.separation">Workspace 核准只記錄治理決策；選用會另行寫入所選 provider。Runtime 狀態保持未驗證。</p>
+              <div id="model-list" class="model-list" aria-live="polite"><p class="empty-note" data-i18n="loading">載入中…</p></div>
+              <details class="create-details"><summary data-i18n="gateway.addModel">新增模型</summary><form id="model-create-form" class="inline-form"><label class="sr-only" for="new-model-name" data-i18n="gateway.modelName">模型名稱</label><input id="new-model-name" class="control" maxlength="200" required><button class="button primary-button" type="submit" data-i18n="create">建立</button></form></details>
+              <div class="operation-controls"><label class="check-row"><input type="checkbox" id="simulate-timeout"><span data-i18n="gateway.timeoutScenario">測試情境：套用後回報逾時（僅本機 provider）</span></label><p class="field-help" data-i18n="gateway.timeoutHelp">用於演練未知結果與讀回；切換前請確認管理 provider。</p></div>
+              <div class="operations-heading"><h3 data-i18n="gateway.operations">管理操作紀錄</h3><button class="text-button" id="refresh-operations" type="button" data-i18n="refresh">重新整理</button></div>
+              <div class="table-wrap"><table><thead><tr><th data-i18n="gateway.operation">操作</th><th data-i18n="gateway.state">狀態</th><th data-i18n="gateway.provider">Provider</th><th data-i18n="action">操作</th></tr></thead><tbody id="operation-rows"><tr><td colspan="4" data-i18n="loading">載入中…</td></tr></tbody></table></div>
+            </section>
+          </div>
+          <p id="gateway-status" class="inline-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        </section>
+
+        <section id="ocr-view" class="view-panel is-hidden" aria-labelledby="ocr-heading">
+          <div class="page-heading"><div><p class="eyebrow">DOCUMENT WORKFLOW / LIVE LOCAL PROCESSING</p><h1 id="ocr-heading" data-i18n="ocr.title">Financial OCR</h1><p class="page-lead" data-i18n="ocr.lead">上傳 PNG/JPEG 圖片並執行實際辨識。抽取欄位與評估結果會保存至本機資料庫。</p></div><button class="quiet-button" id="refresh-cases" type="button" data-i18n="refresh">重新整理</button></div>
+          <div class="ocr-grid">
+            <section class="panel cases-panel" aria-labelledby="cases-title"><div class="panel-heading"><div><p class="eyebrow">CASE REGISTER</p><h2 id="cases-title" data-i18n="ocr.cases">案件</h2></div><span id="case-count" class="count-pill">0</span></div><form id="case-create-form" class="inline-form"><label class="sr-only" for="new-case-title" data-i18n="ocr.caseTitle">案件名稱</label><input id="new-case-title" class="control" maxlength="120" placeholder="案件名稱" data-i18n-placeholder="ocr.caseTitle" required><button class="button primary-button" type="submit" data-i18n="ocr.createCase">建立案件</button></form><div id="case-list" class="case-list" aria-live="polite"><p class="empty-note" data-i18n="loading">載入中…</p></div></section>
+            <section class="panel case-detail" aria-labelledby="case-detail-heading"><div class="panel-heading"><div><p class="eyebrow">RECOGNITION / EVALUATION</p><h2 id="case-detail-heading" data-i18n="ocr.selectCase">選擇案件以檢視</h2></div><span id="case-state" class="state-pill">—</span></div>
+              <div id="case-empty" class="empty-state"><span class="empty-icon" aria-hidden="true">▧</span><p data-i18n="ocr.noCase">建立或選擇案件以開始。</p></div>
+              <div id="case-workspace" class="is-hidden">
+                <div class="case-meta"><span><b data-i18n="ocr.caseId">案件 ID</b><code id="case-id"></code></span><span><b data-i18n="ocr.updated">更新時間</b><time id="case-updated"></time></span></div>
+                <form id="upload-form" class="upload-form"><label class="field-label" for="ocr-provider" data-i18n="ocr.provider">辨識 provider</label><select id="ocr-provider" class="control"><option value="rapidocr" data-i18n="ocr.providerRapid">RapidOCR · 本機 CPU</option><option value="vlm" data-i18n="ocr.providerVlm">已設定的視覺模型</option></select><p class="field-help" id="ocr-provider-note" data-i18n="ocr.providerHelp">RapidOCR 在本機 CPU 執行。VLM 會將原始圖片傳送到目前設定的模型端點。</p><label id="vlm-consent-row" class="check-row is-hidden"><input type="checkbox" id="vlm-consent"><span data-i18n="ocr.vlmConsent">我了解：VLM 會收到未遮罩的原始圖片，傳送至我設定的端點前不會先去識別化。</span></label><label class="field-label" for="ocr-file" data-i18n="ocr.uploadImage">選擇 PNG 或 JPEG 圖片</label><input id="ocr-file" class="file-control" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" required><button class="button primary-button" id="recognize-button" type="submit" data-i18n="ocr.recognize">執行辨識與遮罩</button></form>
+                <details class="sample-document"><summary data-i18n="ocr.sampleDoc">檢視合成範例文件</summary><img src="/api/ocr/sample-document" alt="合成申請文件" data-i18n-alt="ocr.sampleAlt" loading="lazy"><p data-i18n="ocr.sampleNote">這是公開示例提供的合成圖片，不含真實資料。</p></details>
+                <div class="ocr-pipeline"><article class="result-card"><h3 data-i18n="ocr.recognizedFields">實際辨識欄位</h3><pre id="recognized-fields">—</pre></article><article class="result-card"><h3 data-i18n="ocr.provenance">文件來源與遮罩</h3><div id="document-metadata" class="document-list"></div></article><article class="result-card"><h3 data-i18n="ocr.nextRequest">下一步請求預覽</h3><pre id="next-request">—</pre></article><article class="result-card"><h3 data-i18n="ocr.savedResponse">已保存的評估回應</h3><pre id="saved-response">—</pre></article></div>
+                <form id="evaluation-form" class="evaluation-form"><label class="field-label" for="evaluation-mode" data-i18n="ocr.evaluationMode">評估方式</label><select id="evaluation-mode" class="control"><option value="local-validation" data-i18n="ocr.localValidation">本機 schema / 欄位型別檢查</option><option value="llm" data-i18n="ocr.llmEvaluation">設定的模型端點</option></select><p class="field-help" data-i18n="ocr.evalHelp">本機檢查只驗證欄位存在與型別，不計算財務公式或資格。</p><button class="button primary-button" id="evaluate-button" type="submit" data-i18n="ocr.evaluate">執行評估</button></form><div id="evaluation-result" class="evaluation-result is-hidden" role="status" aria-live="polite"></div>
+              </div>
+              <p id="ocr-status" class="inline-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            </section>
+          </div>
+        </section>
+
+        <section id="chat-view" class="view-panel is-hidden" aria-labelledby="chat-heading">
+          <div class="page-heading"><div><p class="eyebrow">SEARCH / MODEL-ASSISTED CHAT</p><h1 id="chat-heading" data-i18n="chat.title">Elasticsearch AIOps</h1><p class="page-lead" data-i18n="chat.lead">固定 Elasticsearch Ops 技能；搜尋模式查詢實際索引或本機 FTS，LLM 模式只在使用者設定端點後啟用。</p></div><button class="quiet-button" id="refresh-rooms" type="button" data-i18n="refresh">重新整理</button></div>
+          <div class="chat-layout"><aside class="panel room-panel" aria-labelledby="rooms-title"><div class="panel-heading"><div><p class="eyebrow">CHAT ROOMS</p><h2 id="rooms-title" data-i18n="chat.rooms">對話列表</h2></div><button class="icon-button" id="create-room" type="button" aria-label="建立對話" data-i18n-aria="chat.createRoom">＋</button></div><form id="room-create-form" class="inline-form"><label class="sr-only" for="new-room-title" data-i18n="chat.roomTitle">對話名稱</label><input id="new-room-title" class="control" maxlength="120" placeholder="新對話" data-i18n-placeholder="chat.newRoom"><button class="button secondary-button" type="submit" data-i18n="chat.newRoom">新增</button></form><div id="room-list" class="room-list" role="list"></div></aside>
+            <section class="panel conversation-panel" aria-labelledby="conversation-title"><div class="conversation-head"><div><p class="eyebrow">ELASTICSEARCH OPS / <span data-i18n="chat.fixedSkill">固定技能</span></p><h2 id="conversation-title" data-i18n="chat.selectRoom">選擇或建立對話</h2></div><div class="conversation-actions"><label class="sr-only" for="chat-mode" data-i18n="chat.mode">回應方式</label><select id="chat-mode" class="control"><option value="search" data-i18n="chat.searchMode">索引搜尋</option><option value="llm" data-i18n="chat.llmMode">已設定模型</option></select><button class="text-button" id="reset-room" type="button" disabled data-i18n="chat.reset">清除對話</button><button class="text-button" id="export-room" type="button" disabled data-i18n="chat.export">匯出</button></div></div><div id="transcript" class="transcript" aria-live="polite" aria-relevant="additions text"><div class="empty-state"><p data-i18n="chat.empty">選擇對話，搜尋合成操作事件。</p></div></div><form id="message-form" class="message-form"><label class="sr-only" for="message-input" data-i18n="chat.message">訊息</label><textarea id="message-input" rows="2" maxlength="8000" placeholder="輸入搜尋問題…" data-i18n-placeholder="chat.messagePlaceholder" disabled></textarea><button class="button primary-button" id="send-message" type="submit" disabled data-i18n="chat.send">送出</button></form><p id="chat-status" class="inline-status" role="status" aria-live="polite" aria-atomic="true"></p></section>
+          </div>
+        </section>
+
+        <section id="settings-view" class="view-panel is-hidden" aria-labelledby="settings-heading">
+          <div class="page-heading"><div><p class="eyebrow">USER-OWNED CONNECTIONS</p><h1 id="settings-heading" data-i18n="settings.title">連線設定</h1><p class="page-lead" data-i18n="settings.lead">只保存端點網址與模型名稱。憑證不會透過此表單讀取或回傳。</p></div><button class="quiet-button" id="refresh-settings" type="button" data-i18n="refresh">重新整理</button></div>
+          <section class="panel settings-panel"><form id="settings-form" class="settings-grid"><label class="field-label" for="setting-litellm" data-i18n="settings.litellm">LiteLLM 管理端點<input id="setting-litellm" class="control" type="url" placeholder="http://127.0.0.1:4000" autocomplete="url"></label><label class="field-label" for="setting-model-base" data-i18n="settings.modelBase">OpenAI-compatible 模型端點<input id="setting-model-base" class="control" type="url" placeholder="http://127.0.0.1:8001/v1" autocomplete="url"></label><label class="field-label" for="setting-model-name" data-i18n="settings.modelName">聊天 / 評估模型名稱<input id="setting-model-name" class="control" maxlength="200" autocomplete="off"></label><label class="field-label" for="setting-vision-model" data-i18n="settings.visionName">OCR VLM 模型名稱<input id="setting-vision-model" class="control" maxlength="200" autocomplete="off"></label><label class="field-label full-width" for="setting-es-url" data-i18n="settings.esUrl">Elasticsearch 端點<input id="setting-es-url" class="control" type="url" placeholder="http://127.0.0.1:9200" autocomplete="url"></label><div class="settings-note full-width"><p data-i18n="settings.secretNote">API keys 與 LiteLLM 管理憑證需由你自行放入忽略追蹤的 .local/runtime-config.json 或環境變數。此介面不提供憑證欄位，不包含範例憑證。</p><p data-i18n="settings.endpointNote">若未設定 Elasticsearch，搜尋使用本機 SQLite FTS5 合成事件。設定外部端點會讓資料請求送到該端點。</p></div><div class="full-width"><button class="button primary-button" type="submit" data-i18n="saveChanges">儲存變更</button><span id="settings-provider" class="settings-provider"></span></div></form></section>
+          <p id="settings-status" class="inline-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        </section>
+
+        <footer class="app-footer"><span data-i18n="footer">本機公開 runtime · SQLite 持久化 · 外部 provider 選用</span><a href="README.md" data-i18n="readme">README</a></footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

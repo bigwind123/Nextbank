@@ -44,3 +44,11 @@ Stage 2 只接收已發布 Profile 白名單允許的欄位與來源頁次。遇
 [開啟 Financial OCR 操作示例](../demo.html?module=ocr)。建立或開啟案例後，選擇 provider、文件類型與內建合成文件，再按「執行辨識與遮罩」。畫面分開呈現 Profile 欄位值、下一步 Case request、已儲存 Raw response 與 Parser 欄位 / errors；辨識只更新前兩項，必須另行按「執行用戶財力評估摘要」才會填入後兩項。Parser 示範 JSON 結構及欄位型別檢查，不重新計算財務公式。頁面不讀取檔案，也不呼叫模型或 vault。
 
 [返回作品集首頁](../README.md)
+
+## 公開版 runtime
+
+公開本機 runtime 以 RapidOCR 在本機 CPU 處理上傳圖片並加密保存文件紀錄。若選用 VLM，未修改的原始圖片會送到操作者設定的 vision endpoint，VLM 收到圖片前不會先去識別化。LLM 評估只傳送欄位白名單 profile；姓名和帳號以文件範圍 HMAC token 取代，且不含原圖、OCR 原文或來源識別資料。外送 token 是可連結的假名化資料，不是匿名化資料；本機加密 vault 另行保存文件紀錄，可供授權流程還原本機記錄，模型輸出不會自動 detokenize。離線 `demo*.html` 只展示固定合成狀態，不會執行 OCR。
+
+## 公開版 runtime
+
+公開本機 runtime 以 RapidOCR 在本機 CPU 處理上傳圖片並加密保存文件紀錄。若選用 VLM，未修改的原始圖片會送到操作者設定的 vision endpoint，VLM 收到圖片前不會先去識別化。LLM 評估只傳送欄位白名單 profile；姓名和帳號以文件範圍 token 取代，且不含原圖、OCR 原文或來源識別資料。這是可還原假名化資料，不是不可逆匿名化。離線 `demo*.html` 只展示固定合成狀態，不會執行 OCR。

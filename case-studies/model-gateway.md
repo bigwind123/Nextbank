@@ -44,3 +44,11 @@
 [開啟 Gateway 操作示例](../demo.html?module=gateway)。在「分配與限額」選擇 Workspace 與模型並按「核准」，可建立獨立的核准紀錄；返回「模型與授權」後，選用已核准模型會呈現原生 Team 狀態。勾選「展示情境：模擬回應逾時」可查看「待核對」與讀回流程。核准、原生 Team 選用及 Runtime 驗證分別顯示。頁面使用合成狀態，不連接 Flask、LiteLLM 或模型端點。
 
 [返回作品集首頁](../README.md)
+
+## 公開版 runtime
+
+此 checkout 另含可執行的本機 Flask/SQLite 重建版，提供 Workspace／模型目錄、核准紀錄、provider 選用及操作讀回；這是公開版程式，不代表原私人服務或遠端部署已隨本 repo 發佈。離線 `demo*.html` 則是獨立的合成介面，不會呼叫 runtime。若設定 LiteLLM 管理端點，公開 runtime 才會呼叫該操作者提供的服務。
+
+## 公開版 runtime
+
+此 checkout 另含可執行的本機 Flask/SQLite 重建版，提供 Workspace／模型目錄、核准紀錄、provider 選用及操作讀回；這是公開版程式，不代表原私人服務或遠端部署已隨本 repo 發佈。離線 `demo*.html` 則是獨立的合成介面，不會呼叫 runtime。若設定 LiteLLM 管理端點，公開 runtime 才會呼叫該操作者提供的服務。

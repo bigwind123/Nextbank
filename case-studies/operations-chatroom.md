@@ -36,3 +36,11 @@
 [開啟 Elasticsearch 對話示例](../demo.html?module=chat)。選擇或建立對話、選取合成模型設定並送出問題，可查看固定 Elasticsearch Ops 技能下的離線回覆與可展開的 MCP 工具呼叫紀錄；「重設對話」清除目前訊息但保留對話，「匯出對話」下載本機合成文字。這個操作介面不提供切換技能或允許／拒絕工具按鈕；公開 Python sample 的 fail-closed dispatch 改善另見[公開示例說明](../docs/public-sample.md)。示例不連接 MCP、Elasticsearch 或模型端點。
 
 [返回作品集首頁](../README.md)
+
+## 公開版 runtime
+
+公開本機 runtime 的聊天搜尋會查詢 SQLite FTS5 合成事件，或操作者設定的 Elasticsearch；模型回應則呼叫另行設定的推論端點。`/mcp` 只支援要求固定 `elasticsearch-ops` context 的 JSON-RPC 工具列舉與呼叫子集，不是通用 MCP server。離線 `demo*.html` 仍是合成介面，與 live runtime 分開。
+
+## 公開版 runtime
+
+公開本機 runtime 的聊天搜尋會查詢 SQLite FTS5 合成事件，或操作者設定的 Elasticsearch；模型回應則呼叫另行設定的推論端點。`/mcp` 只支援要求固定 `elasticsearch-ops` context 的 JSON-RPC 工具列舉與呼叫子集，不是通用 MCP server。離線 `demo*.html` 仍是合成介面，與 live runtime 分開。

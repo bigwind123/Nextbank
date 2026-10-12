@@ -48,7 +48,3 @@ Stage 2 只接收已發布 Profile 白名單允許的欄位與來源頁次。遇
 ## 公開版 runtime
 
 公開本機 runtime 以 RapidOCR 在本機 CPU 處理上傳圖片並加密保存文件紀錄。若選用 VLM，未修改的原始圖片會送到操作者設定的 vision endpoint，VLM 收到圖片前不會先去識別化。LLM 評估只傳送欄位白名單 profile；姓名和帳號以文件範圍 HMAC token 取代，且不含原圖、OCR 原文或來源識別資料。外送 token 是可連結的假名化資料，不是匿名化資料；本機加密 vault 另行保存文件紀錄，可供授權流程還原本機記錄，模型輸出不會自動 detokenize。離線 `demo*.html` 只展示固定合成狀態，不會執行 OCR。
-
-## 公開版 runtime
-
-公開本機 runtime 以 RapidOCR 在本機 CPU 處理上傳圖片並加密保存文件紀錄。若選用 VLM，未修改的原始圖片會送到操作者設定的 vision endpoint，VLM 收到圖片前不會先去識別化。LLM 評估只傳送欄位白名單 profile；姓名和帳號以文件範圍 token 取代，且不含原圖、OCR 原文或來源識別資料。這是可還原假名化資料，不是不可逆匿名化。離線 `demo*.html` 只展示固定合成狀態，不會執行 OCR。

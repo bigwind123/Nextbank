@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture showcase panels</title>
+<style>
+  :root { color-scheme: dark; --bg:#07111f; --panel:#101e30; --panel2:#13253a; --line:#334a63; --text:#f2f6fc; --muted:#b2c1d4; --cyan:#71d5e6; --violet:#b4a0ff; --green:#8bd8ad; --amber:#f5c678; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; background:#030a12; color:var(--text); font-family:Inter,"Segoe UI","Microsoft JhengHei",Arial,sans-serif; }
+  body { min-width:1600px; }
+  .slide { width:1600px; min-height:1000px; padding:48px 68px 42px; position:relative; overflow:visible; background:radial-gradient(ellipse at 85% 0%,#162c43 0%,transparent 42%),linear-gradient(145deg,#081422,#0a1523 65%,#0b1b2b); display:none; }
+  .slide.active { display:block; }
+  .topline { display:flex; justify-content:space-between; align-items:center; color:#91a7c0; font-size:20px; letter-spacing:.11em; text-transform:uppercase; }
+  .mark { color:var(--cyan); font-weight:700; }
+  h1 { font-size:43px; line-height:1.12; letter-spacing:-.025em; margin:22px 0 10px; font-weight:760; }
+  .subtitle { color:#c3cfdd; font-size:24px; line-height:1.35; margin:0; max-width:1430px; }
+  .rule { height:1px; background:linear-gradient(90deg,var(--cyan),#526985 54%,transparent); margin:22px 0 22px; }
+  .section-title { display:flex; align-items:center; gap:14px; font-size:20px; color:#9eb3ca; text-transform:uppercase; letter-spacing:.13em; margin:0 0 14px; }
+  .section-title:before { content:""; width:27px; height:3px; background:var(--cyan); border-radius:3px; }
+  .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:34px; position:relative; margin-bottom:20px; }
+  .flow.three { grid-template-columns:repeat(3,1fr); }
+  .flow.branch .node:after,.flow.branch .node:before { display:none; }
+  .node { min-height:122px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(160deg,rgba(22,40,61,.98),rgba(13,27,43,.98)); padding:18px 20px; position:relative; box-shadow:0 12px 22px #0003; }
+  .node:not(:last-child):after { content:""; position:absolute; right:-35px; width:34px; height:2px; top:50%; background:var(--cyan); }
+  .node:not(:last-child):before { content:""; position:absolute; right:-35px; top:calc(50% - 5px); width:9px; height:9px; border-top:2px solid var(--cyan); border-right:2px solid var(--cyan); transform:rotate(45deg); z-index:1; }
+  .node .kicker { color:var(--cyan); font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:9px; }
+  .node h2 { font-size:25px; line-height:1.16; margin:0 0 8px; font-weight:720; }
+  .node p { color:var(--muted); font-size:20px; line-height:1.28; margin:0; }
+  .node.purple .kicker { color:var(--violet); }
+  .node.green .kicker { color:var(--green); }
+  .node.amber .kicker { color:var(--amber); }
+  .lane-label { font-size:22px; color:#afc1d5; margin:15px 0 10px; display:flex; align-items:center; gap:10px; }
+  .lane-label span { height:1px; background:#334a63; flex:1; }
+  .lower { display:block; margin-top:24px; }
+  .caption { padding:0 0 18px; }
+  .tag { display:inline-flex; width:max-content; border:1px solid #4b6682; border-radius:999px; padding:7px 13px; font-size:18px; color:#c6d6e8; letter-spacing:.04em; margin-bottom:10px; background:#102239; }
+  .caption h3 { font-size:26px; margin:0 0 7px; }
+  .caption p { color:#b9c8d8; font-size:21px; line-height:1.35; margin:0; max-width:1464px; }
+  .thumb { width:100%; border:1px solid #3b526b; background:#0d1b2b; border-radius:16px; padding:12px; display:flex; flex-direction:column; }
+  .thumb label { font-size:18px; color:#9db3c9; letter-spacing:.08em; padding:2px 5px 8px; }
+  .thumb img { display:block; width:100%; height:auto; object-fit:contain; border-radius:9px; }
+  .foot { display:none; }
+  .smallcaps { color:#8fa7be; font-size:17px; letter-spacing:.08em; text-transform:uppercase; }
+  .two-lanes { margin-top:8px; }
+  .callout { border:1px solid #6b5733; background:#241e16; border-radius:12px; color:#f0d4a0; padding:12px 17px; font-size:20px; line-height:1.3; margin-top:10px; }
+  .callout b { color:#ffe0a4; }
+  .compact .node { min-height:110px; }
+</style>
+</head>
+<body>
+<main id="slides"></main>
+<script>
+const panels = [
+  {
+    id:"gateway-management", lang:"en", title:"LiteLLM gateway management and model access", subtitle:"A local portfolio runtime can use its own registry or connect to a user-deployed LiteLLM management API. Application inference uses its separately configured path.",
+    lanes:[
+      {label:"CONTROL PLANE · APPROVAL AND SELECTION", nodes:[
+        ["Workspace admin","Approve a model","Approval grants access; it does not select the runtime model."],
+        ["Workspace mapping","Select in native LiteLLM Team","A separate action updates the workspace-to-model mapping."],
+        ["Management adapter","LiteLLM management API","Optional, user-configured integration for Team/model administration."],
+        ["Recovery","Read back before retry","An uncertain change stays locked until native ownership is verified."]
+      ]},
+      {label:"INFERENCE PLANE · INDEPENDENT OF THE FLASK MANAGER", nodes:[
+        ["Application","Configured inference client","Applications use their own inference configuration."],
+        ["Inference gateway","LiteLLM inference endpoint","A separately configured endpoint routes generation requests."],
+        ["Model provider","User-selected deployment","Provider and model are supplied by the operator."]
+      ]}
+    ],
+    tag:"SYNTHETIC · OFFLINE UI EXAMPLE", capTitle:"LiteLLM administration and application inference remain separate", caption:"The persistent local registry is a demo mode. A configured LiteLLM management API handles Team/model administration, while applications send inference through a separately configured endpoint.", thumb:"platform-overview.en.png", thumbLabel:"Offline portfolio walkthrough · platform overview"
+  },
+  {
+    id:"gateway-management", lang:"zh", title:"LiteLLM Gateway 管理與模型存取", subtitle:"本機作品集執行環境可使用自己的登錄目錄，也可連接使用者部署的 LiteLLM 管理 API。應用程式推論走另一條設定路徑。",
+    lanes:[
+      {label:"控制平面 · 核准與選用", nodes:[
+        ["Workspace 管理","核准模型","核准只記錄存取權，不代表執行環境已選用模型。"],
+        ["Workspace 對應","在原生 LiteLLM Team 中選用","另一個操作更新 Workspace 與模型的對應。"],
+        ["管理介接器","LiteLLM 管理 API","可選的使用者設定介接，用於 Team／模型管理。"],
+        ["復原","重試前先讀回","不確定的寫入會保持鎖定，直到確認原生資源歸屬。"]
+      ]},
+      {label:"推論平面 · 與 Flask 管理器分離", nodes:[
+        ["應用程式","已設定的推論用戶端","應用程式使用各自的推論設定。"],
+        ["推論閘道","LiteLLM 推論端點","另一個設定端點負責轉送生成請求。"],
+        ["模型供應者","使用者選擇的部署","供應者與模型由操作者設定。"]
+      ]}
+    ],
+    tag:"合成資料 · 離線介面範例", capTitle:"LiteLLM 管理與應用程式推論各自分離", caption:"持久化本機登錄是展示模式。設定 LiteLLM 管理 API 後可管理 Team／模型；應用程式推論則使用另外設定的端點。", thumb:"platform-overview.png", thumbLabel:"離線作品集導覽 · 平台總覽"
+  },
+  {
+    id:"ai-ocr-flow", lang:"en", title:"OCR to protected financial evaluation", subtitle:"Original-design flow: selected VLM extraction, profile minimization, cloud or on-prem model evaluation, and local AES-GCM token mapping.",
+    lanes:[
+      {label:"DOCUMENT FLOW · EXTRACTION PRECEDES PROTECTION", nodes:[
+        ["Stage 1","Configured OCR / VLM extraction","Public runtime defaults to local CPU; the original pipeline uses a selected VLM, configurable on-prem."],
+        ["Local minimization","Allowlisted profile","Protected fields become document-scoped tokens; reject unknown/group values."],
+        ["Stage 2 · Model evaluation","Cloud or on-prem model","Send only the minimized profile; no raw image or source text."],
+        ["Original design · AES-GCM mapping","Original-value recovery","Reversible token mapping stays local for authorized recovery."]
+      ]}
+    ],
+    extra:"",
+    tag:"SYNTHETIC · OFFLINE UI EXAMPLE", capTitle:"Document-scoped protection with local reversible storage", caption:"Boundary: the original design uses a local AES-GCM token map. The public runtime instead stores encrypted original documents and sends HMAC pseudonyms; it has no token-to-value table. A cloud VLM sees the raw image before masking, and model output is not automatically restored.", thumb:"ocr-payload.en.png", thumbLabel:"Offline portfolio walkthrough · OCR payload controls"
+  },
+  {
+    id:"ai-ocr-flow", lang:"zh", title:"從 OCR 到受保護的財力評估", subtitle:"原始設計流程：使用選定 VLM 辨識、Profile 最小化、雲端或本機模型評估，以及本機 AES-GCM 代碼對照。",
+    lanes:[
+      {label:"文件流程 · 先擷取，再保護欄位", nodes:[
+        ["第一階段","設定的 OCR／VLM 辨識","公開版預設本機 CPU；原專案使用選定 VLM，可設定地端部署。"],
+        ["本機最小化","白名單 Profile","受保護欄位替換成文件範圍代碼；拒絕未知或群組值。"],
+        ["第二階段 · 模型評估","雲端或本機模型","只傳最小化 Profile，不含原圖或來源文字。"],
+        ["原始設計 · AES-GCM 對照","還原原始值","可逆代碼對照留在本機，供授權還原。"]
+      ]}
+    ],
+    extra:"",
+    tag:"合成資料 · 離線介面範例", capTitle:"以文件範圍代碼保護資料，並在本機加密保留對照", caption:"界線：原始設計使用本機 AES-GCM 代碼對照。公開執行環境改為加密保存原始文件並傳送 HMAC 假名，沒有代碼與原值對照表。雲端 VLM 遮罩前會收到原始影像；模型輸出不會自動還原。", thumb:"ocr-payload.png", thumbLabel:"離線作品集導覽 · OCR payload 控制"
+  },
+  {
+    id:"aiops-integrations", lang:"en", title:"Natural-language operations: Elasticsearch, Linux, VMware vSphere", subtitle:"A source-backed architecture of chat, scoped tool access, and controlled operations. The public runtime demo implements Elasticsearch only.",
+    lanes:[
+      {label:"PRIVATE AIOPS SOURCE CAPABILITIES · NOT A LIVE DEMO RESULT", nodes:[
+        ["Operator request","Natural-language chat","A chatroom selects an active skill."],
+        ["Tool scope","Skill-visible capabilities","Different tools use different transports and action boundaries."]
+      ]},
+      {label:"AVAILABLE TOOL PATHS · DISTINCT TRANSPORTS", branch:true, nodes:[
+        ["Elasticsearch · MCP","Search and inspect","Skill-scoped MCP calls support Elasticsearch operations."],
+        ["Linux hosts · direct SSH","Command execution","Commands can change systems; skill guidance asks for confirmation before changes."],
+        ["VMware vSphere · MCP","Read-only query / guarded action","Query is read-only; changes use a separate confirmation-required action."]
+      ]}
+    ],
+    extra:"",
+    tag:"SYNTHETIC · OFFLINE UI EXAMPLE", capTitle:"Natural-language query and controlled operations", caption:"Boundary: the public demo implements Elasticsearch only. Linux uses direct SSH command execution, not an enforced read-only path; VMware vSphere has read-only queries and separate confirmation-required actions. No live infrastructure result is shown.", thumb:"mcp-scope.en.png", thumbLabel:"Offline portfolio walkthrough · Elasticsearch tool scope"
+  },
+  {
+    id:"aiops-integrations", lang:"zh", title:"自然語言操作：Elasticsearch、Linux 與 VMware vSphere", subtitle:"依據原始程式呈現聊天、受範圍限制的工具存取與受控操作架構。公開執行環境只實作 Elasticsearch。",
+    lanes:[
+      {label:"私有 AIOPS 原始碼能力 · 非即時展示結果", nodes:[
+        ["操作者請求","自然語言對話","聊天室選取作用中的 skill。"],
+        ["工具範圍","Skill 可見能力","不同工具使用不同傳輸方式與操作界線。"]
+      ]},
+      {label:"可用工具路徑 · 傳輸方式各異", branch:true, nodes:[
+        ["Elasticsearch · MCP","搜尋與檢視","受 skill 範圍限制的 MCP 呼叫支援 Elasticsearch 操作。"],
+        ["Linux 主機 · 直接 SSH","命令執行","命令可能變更系統；skill 指引要求變更前確認。"],
+        ["VMware vSphere · MCP","唯讀查詢／受控操作","查詢為唯讀；變更使用另一個需確認的操作。"]
+      ]}
+    ],
+    extra:"",
+    tag:"合成資料 · 離線介面範例", capTitle:"以自然語言查詢並受控操作", caption:"界線：公開展示只實作 Elasticsearch。Linux 使用直接 SSH 命令執行，並非技術上的唯讀路徑；VMware vSphere 將唯讀查詢與需確認的變更操作分開。此圖未呈現即時基礎設施結果。", thumb:"mcp-scope.png", thumbLabel:"離線作品集導覽 · Elasticsearch 工具範圍"
+  }
+];
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function render(p) {
+  const lanes = p.lanes.map(l => `<div class="lane-label">${escapeHtml(l.label)}<span></span></div><div class="flow ${l.nodes.length===3?'three':''} ${l.branch?'branch':''} compact">${l.nodes.map((n,i)=>`<article class="node ${i===l.nodes.length-1?'purple':''}"><div class="kicker">${escapeHtml(n[0])}</div><h2>${escapeHtml(n[1])}</h2><p>${escapeHtml(n[2])}</p></article>`).join('')}</div>`).join('');
+  return `<section class="slide" id="${p.id}-${p.lang}" lang="${p.lang}"><div class="topline"><span class="mark">NEXTBANK · ARCHITECTURE NOTES</span><span>${p.lang==='en'?'LOCAL, CONFIGURABLE INTEGRATIONS':'本機、可設定的整合'}</span></div><h1>${escapeHtml(p.title)}</h1><p class="subtitle">${escapeHtml(p.subtitle)}</p><div class="rule"></div>${lanes}${p.extra||''}<div class="lower"><div class="caption"><span class="tag">${escapeHtml(p.tag)}</span><h3>${escapeHtml(p.capTitle)}</h3><p>${escapeHtml(p.caption)}</p></div><div class="thumb"><label>${escapeHtml(p.thumbLabel)}</label><img src="${escapeHtml(p.thumb)}" alt="${escapeHtml(p.thumbLabel)}"></div></div><div class="foot"><span>${p.lang==='en'?'Illustrative flow · no live customer systems or data':'示意流程 · 未連線客戶系統或資料'}</span><span>${p.lang==='en'?'Synthetic examples only':'僅含合成範例'}</span></div></section>`;
+}
+document.getElementById('slides').innerHTML = panels.map(render).join('');
+const key = new URLSearchParams(location.search).get('slide');
+const target = document.getElementById(key || 'gateway-management-en') || document.getElementById('gateway-management-en');
+target.classList.add('active');
+</script>
+</body>
+</html>

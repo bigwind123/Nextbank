@@ -40,7 +40,3 @@
 ## 公開版 runtime
 
 公開本機 runtime 的聊天搜尋會查詢 SQLite FTS5 合成事件，或操作者設定的 Elasticsearch；模型回應則呼叫另行設定的推論端點。`/mcp` 只支援要求固定 `elasticsearch-ops` context 的 JSON-RPC 工具列舉與呼叫子集，不是通用 MCP server。離線 `demo*.html` 仍是合成介面，與 live runtime 分開。
-
-## 公開版 runtime
-
-公開本機 runtime 的聊天搜尋會查詢 SQLite FTS5 合成事件，或操作者設定的 Elasticsearch；模型回應則呼叫另行設定的推論端點。`/mcp` 只支援要求固定 `elasticsearch-ops` context 的 JSON-RPC 工具列舉與呼叫子集，不是通用 MCP server。離線 `demo*.html` 仍是合成介面，與 live runtime 分開。

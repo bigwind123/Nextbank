@@ -1,8 +1,28 @@
 # AI Model Gateway 工程作品集
 
-AI Model Gateway 是管理模型端點、Workspace 存取與共用用量的控制面。工程重點包括管理 Workspace 與模型權限、區分核准和原生 Team 設定，以及處理遠端寫入結果不明時的讀回核對。Gateway 管理 LiteLLM 原生物件；Financial OCR 與 Elasticsearch AIOps 是各自使用獨立推論端點的應用示例。本作品集呈現源自實際工程工作的設計與合成示例。
+本專案是 LiteLLM 管理代理／控制層，對接由操作者另行部署的 LiteLLM Gateway；實際模型 Gateway 與推論服務須由操作者自行部署 LiteLLM。此管理層維護 LiteLLM 原生物件，不會轉送推論請求。可選的 SQLite 本機流程只用於展示管理行為，不能取代 LiteLLM。Financial OCR 與 Elasticsearch AIOps 是各自使用獨立推論端點的應用示例。本作品集呈現源自實際工程工作的設計與合成示例。
 
 [開啟作品集](index.html) | [執行本機應用](app.html) | [Gateway 離線示例](demo.html?module=gateway) | [OCR 離線示例](demo.html?module=ocr) | [Elasticsearch 對話離線示例](demo.html?module=chat) | [English runtime](app.en.html) | [English README](README.md)
+
+## 三個工程領域
+
+### 1. AI Gateway — LiteLLM 管理
+
+![源自專案架構的 Gateway 設計，搭配既有的離線合成操作介面](assets/screenshots/gateway-management.png)
+
+Workspace 模型治理分開核准、LiteLLM 原生 Team 選用與操作讀回。此圖結合源自專案的架構與既有離線合成操作介面，不是即時 runtime 畫面。[AI Model Gateway 案例](case-studies/model-gateway.md)。
+
+### 2. AI OCR / Financial OCR — 本機隱私控制與選用雲端運算
+
+![源自專案架構的 OCR 設計，搭配既有的離線合成操作介面](assets/screenshots/ai-ocr-flow.png)
+
+預設在本機辨識圖片、將白名單欄位假名化，並僅在設定外部評估端點時傳送精簡 profile；原始設計會在本機保存可逆的加密 token 對應，僅於案例授權流程中還原並留下稽核紀錄。公開 runtime 則以 AES-GCM 加密原始文件紀錄供本機還原，並以 HMAC 假名代碼處理外送欄位；不保存 token 到原值對應表，模型輸出也不會自動反向還原。如選用 VLM，未遮罩的原始圖片會先傳送至視覺模型端點，不會先去識別化；詳細邊界見下方。此圖結合源自專案的架構與既有離線合成操作介面，不是即時 runtime 畫面。[Financial OCR 案例](case-studies/financial-ocr.md)。
+
+### 3. AIOps — 自然語言操作
+
+![源自專案架構的 AIOps 整合設計，搭配既有的離線合成操作介面](assets/screenshots/aiops-integrations.png)
+
+原應用支援自然語言操作流程，以技能範圍 MCP 工具整合 Elasticsearch，以 SSH 執行 Linux 操作，並以 MCP 連接 VMware vSphere；VMware 變更需明確確認與服務授權。目前公開 runtime 僅提供 Elasticsearch 搜尋功能。此圖結合源自專案的架構與既有離線合成操作介面，不是即時 runtime 畫面。[Elasticsearch AIOps 案例](case-studies/operations-chatroom.md)。
 
 ## 此 checkout 可執行的內容
 
@@ -42,12 +62,6 @@ python3 -m venv .venv
 開啟 <http://127.0.0.1:8000/> 使用 live runtime。操作台沒有驗證機制，請只在本機使用，不要曝露連接埠。RapidOCR 預設於本機 CPU 執行；VLM 則會將未遮罩的原始圖片傳送至操作者設定的端點，收到圖片前不會去識別化。LLM 評估僅傳送欄位白名單；姓名與帳號值會以文件範圍 token 取代，不包含原始圖片、OCR 原文、來源識別碼與原始行資料；這是假名化，不是不可逆的匿名化。Elasticsearch 需由使用者提供可直接連線、無需認證的測試端點。更多資料保存與端點邊界見[本機 runtime 說明](docs/public-runtime.zh-TW.md)。
 
 更多執行與資料邊界請見[本機 runtime 說明](docs/public-runtime.zh-TW.md)。
-
-### 本機示例預覽
-
-[![Gateway 管理控制面預覽](assets/screenshots/platform-overview.png)](demo.html?module=gateway)
-
-[Financial OCR 預覽](demo.html?module=ocr) · [Elasticsearch AIOps 預覽](demo.html?module=chat)
 
 ## 本機操作示例
 

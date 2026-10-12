@@ -1,8 +1,28 @@
 # AI Model Gateway - Engineering Portfolio
 
-An AI Model Gateway provides a control plane for model endpoints, workspace access, and shared usage. Its engineering problems include governing Workspace and model access, separating approval from native Team configuration, and reconciling remote writes whose outcomes are uncertain. The Gateway manages native LiteLLM objects; Financial OCR and Elasticsearch AIOps are application examples with separately configured inference endpoints. This portfolio presents selected designs and synthetic examples drawn from real engineering work.
+This project is the LiteLLM management proxy and control layer for a separately deployed LiteLLM Gateway; operators deploy LiteLLM themselves for the actual model gateway and inference. It manages native LiteLLM objects and does not forward inference requests. The optional local SQLite workflow demonstrates management behavior and is not a substitute for LiteLLM. Financial OCR and Elasticsearch AIOps are application examples with separately configured inference endpoints. This portfolio presents selected designs and synthetic examples drawn from real engineering work.
 
 [Open the local portfolio](index.html) | [Run the local app](app.en.html) | [Gateway offline walkthrough](demo.en.html?module=gateway) | [OCR offline walkthrough](demo.en.html?module=ocr) | [Elasticsearch chat offline walkthrough](demo.en.html?module=chat) | [Traditional Chinese runtime](app.html) | [Read in Traditional Chinese](README.zh-TW.md)
+
+## Three engineering areas
+
+### 1. AI Gateway — LiteLLM management
+
+![Source-derived Gateway architecture paired with the existing offline synthetic UI](assets/screenshots/gateway-management.en.png)
+
+Workspace model governance separates approval, native LiteLLM Team selection, and operation readback. This composite pairs source-derived architecture with the existing offline synthetic UI; it is not a live runtime capture. [Read the Gateway case study](case-studies/model-gateway.md).
+
+### 2. AI OCR / Financial OCR — local privacy controls and optional cloud computation
+
+![Source-derived OCR architecture paired with the existing offline synthetic UI](assets/screenshots/ai-ocr-flow.en.png)
+
+The original design kept a reversible encrypted token mapping locally, with case-authorized and audited reversal. The public runtime instead encrypts original document records with AES-GCM for local recovery and uses HMAC pseudonyms for outbound fields; it does not store a token-to-value mapping table, and model output is never automatically detokenized. Recognition runs locally by default; a minimized profile is sent only when an external evaluation endpoint is configured. If VLM is selected, the original image is sent to the configured vision endpoint before any de-identification; details are below. This composite pairs source-derived architecture with the existing offline synthetic UI; it is not a live runtime capture. [Read the OCR case study](case-studies/financial-ocr.md).
+
+### 3. AIOps — natural-language operations
+
+![Source-derived AIOps architecture paired with the existing offline synthetic UI](assets/screenshots/aiops-integrations.en.png)
+
+The original application supported natural-language operational workflows using skill-scoped MCP tools for Elasticsearch, SSH for Linux, and MCP for VMware vSphere; VMware changes require explicit confirmation and service authorization. The public runtime currently exposes Elasticsearch search only. This composite pairs source-derived architecture with the existing offline synthetic UI; it is not a live runtime capture. [Read the AIOps case study](case-studies/operations-chatroom.md).
 
 ## What this checkout can run
 
@@ -16,12 +36,6 @@ An AI Model Gateway provides a control plane for model endpoints, workspace acce
 Live app records persist in the local SQLite database under `.local/runtime`; its browser view state resets on reload. Offline walkthrough state resets on reload, and the separate Python example's operation, provider, and pseudonym records exist only in that process. None of these public tools connects to a private platform deployment.
 
 ![Platform overview diagram](assets/diagrams/platform-overview.svg)
-
-### Local walkthrough previews
-
-[![Gateway control-plane preview](assets/screenshots/platform-overview.en.png)](demo.en.html?module=gateway)
-
-[Financial OCR preview](demo.en.html?module=ocr) · [Elasticsearch AIOps preview](demo.en.html?module=chat)
 
 ## Run the local application
 

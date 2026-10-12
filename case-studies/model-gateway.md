@@ -48,7 +48,3 @@
 ## 公開版 runtime
 
 此 checkout 另含可執行的本機 Flask/SQLite 重建版，提供 Workspace／模型目錄、核准紀錄、provider 選用及操作讀回；這是公開版程式，不代表原私人服務或遠端部署已隨本 repo 發佈。離線 `demo*.html` 則是獨立的合成介面，不會呼叫 runtime。若設定 LiteLLM 管理端點，公開 runtime 才會呼叫該操作者提供的服務。
-
-## 公開版 runtime
-
-此 checkout 另含可執行的本機 Flask/SQLite 重建版，提供 Workspace／模型目錄、核准紀錄、provider 選用及操作讀回；這是公開版程式，不代表原私人服務或遠端部署已隨本 repo 發佈。離線 `demo*.html` 則是獨立的合成介面，不會呼叫 runtime。若設定 LiteLLM 管理端點，公開 runtime 才會呼叫該操作者提供的服務。
